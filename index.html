@@ -61,6 +61,14 @@ body { font-family: Georgia, serif; background: linear-gradient(160deg,#0f0c29,#
   <input id="search" placeholder="🔍 Buscar..." oninput="render()">
 </div>
 
+
+<div class="filters" style="margin-top:-4px;padding-bottom:12px;">
+  <button class="filter-btn" onclick="exportData()" style="background:rgba(255,200,0,0.15);border-color:#f5c518;">💾 Exportar backup</button>
+  <label class="filter-btn" style="background:rgba(0,200,100,0.15);border-color:#4caf50;cursor:pointer;">
+    📂 Importar backup
+    <input type="file" accept=".txt" onchange="importData(event)" style="display:none">
+  </label>
+</div>
 <div class="teams-bar" id="teams-bar"></div>
 <div class="groups" id="groups"></div>
 <div class="footer">Tocá cada figurita para marcarla • Se guarda automáticamente</div>
@@ -195,6 +203,32 @@ function render() {
       +'</div><div class="stickers">'+stickersHTML+'</div></div>';
   }
   gc.innerHTML = gcHTML;
+}
+
+
+function exportData() {
+  var keys = Object.keys(placed);
+  var text = keys.join('\n');
+  var blob = new Blob([text], {type:'text/plain'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'album-panini-backup.txt';
+  a.click();
+}
+
+function importData(event) {
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var lines = e.target.result.split('\n').filter(function(l){ return l.trim(); });
+    placed = {};
+    for(var i=0; i<lines.length; i++) placed[lines[i].trim()] = 1;
+    save();
+    render();
+    alert('Importado correctamente: ' + lines.length + ' figuritas');
+  };
+  reader.readAsText(file);
 }
 
 window.onload = function() { render(); };
