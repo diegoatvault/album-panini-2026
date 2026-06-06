@@ -239,6 +239,7 @@ function printMissing() {
   html += '<h2>Total: ' + total + ' figuritas • Generado el ' + new Date().toLocaleDateString('es-AR') + '</h2>';
   html += '<button onclick="window.print()" style="margin-bottom:16px;padding:8px 16px;font-size:14px;cursor:pointer;">🖨️ Imprimir</button>';
 
+  html += '<div class="teams-grid">';
   for(var i=0; i<TEAMS_ORDER.length; i++) {
     var t = TEAMS_ORDER[i];
     if(!missing[t]) continue;
@@ -250,7 +251,7 @@ function printMissing() {
     html += '</div></div>';
   }
 
-  html += '<div class="footer">Album FIFA World Cup 2026 — diegoatvault.github.io/album-panini-2026</div>';
+  html += '</div><div class="footer">Album FIFA World Cup 2026 — diegoatvault.github.io/album-panini-2026</div>';
   html += '</body></html>';
 
   var win = window.open('', '_blank');
