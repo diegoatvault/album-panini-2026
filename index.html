@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Album FIFA 2026</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Georgia, serif; background: linear-gradient(160deg,#0f0c29,#302b63,#24243e); min-height: 100vh; color: #fff; padding-bottom: 60px; }
 .header { background: linear-gradient(90deg,#c8102e,#0033a0); padding: 16px 20px; text-align: center; border-bottom: 4px solid #f5c518; }
 .header h1 { font-size: 22px; margin: 4px 0; }
@@ -17,14 +17,14 @@ body { font-family: Georgia, serif; background: linear-gradient(160deg,#0f0c29,#
 .progress-wrap { padding: 6px 16px 12px; }
 .progress-bar { background: rgba(255,255,255,0.1); border-radius: 8px; height: 10px; overflow: hidden; }
 .progress-fill { height: 100%; background: linear-gradient(90deg,#4caf50,#f5c518); border-radius: 8px; transition: width 0.4s; }
-.filters { display: flex; justify-content: center; gap: 8px; padding: 0 16px 10px; flex-wrap: wrap; }
+.filters { display: flex; justify-content: center; gap: 8px; padding: 0 16px 8px; flex-wrap: wrap; }
 .filter-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); color: #fff; font-weight: bold; cursor: pointer; font-size: 14px; }
 .filter-btn.active { border-color: #f5c518; background: #f5c518; color: #000; }
 #search { padding: 8px 14px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: #fff; font-size: 14px; outline: none; width: 130px; }
-.teams-bar { padding: 0 12px 10px; display: flex; gap: 5px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.action-btns { display: flex; justify-content: center; gap: 8px; padding: 0 16px 10px; flex-wrap: wrap; }
+.action-btn { padding: 8px 16px; border-radius: 20px; border: 2px solid; background: rgba(255,255,255,0.06); font-weight: bold; cursor: pointer; font-size: 13px; }
+.teams-bar { padding: 0 12px 10px; display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .teams-bar::-webkit-scrollbar { display: none; }
-.team-btn { padding: 6px 12px; border-radius: 12px; white-space: nowrap; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); color: #ccc; font-size: 13px; cursor: pointer; flex-shrink: 0; }
-.team-btn.active { border-color: #f5c518; background: #f5c518; color: #000; font-weight: bold; }
 .groups { padding: 0 12px; }
 .group { margin-bottom: 14px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); }
 .group-header { padding: 10px 14px; }
@@ -34,272 +34,223 @@ body { font-family: Georgia, serif; background: linear-gradient(160deg,#0f0c29,#
 .group-prog { background: rgba(0,0,0,0.3); border-radius: 4px; height: 5px; overflow: hidden; }
 .group-prog-fill { height: 100%; border-radius: 4px; }
 .stickers { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; padding: 10px; }
-.sticker { padding: 12px 8px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); cursor: pointer; font-size: 16px; font-weight: bold; color: #fff; text-align: center; transition: all 0.15s; }
+.sticker { padding: 12px 8px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); cursor: pointer; font-size: 16px; font-weight: bold; color: #fff; text-align: center; }
 .sticker.have { border-color: #4caf50; background: rgba(76,175,80,0.2); }
-.footer { text-align: center; font-size: 11px; opacity: 0.35; margin-top: 12px; }
 </style>
 </head>
 <body>
-
 <div class="header">
   <h1>⚽ FIFA World Cup 2026™</h1>
   <p>Álbum de Diego & su hija 🌟</p>
 </div>
-
 <div class="stats">
-  <div class="stat"><div class="stat-val" id="s-total" style="color:#aaa">-</div><div class="stat-lbl">Total</div></div>
-  <div class="stat"><div class="stat-val" id="s-have" style="color:#4caf50">-</div><div class="stat-lbl">✅ Pegadas</div></div>
-  <div class="stat"><div class="stat-val" id="s-miss" style="color:#f44336">-</div><div class="stat-lbl">❌ Faltan</div></div>
+  <div class="stat"><div class="stat-val" id="s-total" style="color:#aaa">0</div><div class="stat-lbl">Total</div></div>
+  <div class="stat"><div class="stat-val" id="s-have" style="color:#4caf50">0</div><div class="stat-lbl">✅ Pegadas</div></div>
+  <div class="stat"><div class="stat-val" id="s-miss" style="color:#f44336">0</div><div class="stat-lbl">❌ Faltan</div></div>
   <div class="stat"><div class="stat-val" id="s-pct" style="color:#f5c518">0%</div><div class="stat-lbl">Progreso</div></div>
 </div>
 <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div></div>
-
 <div class="filters">
   <button class="filter-btn active" id="btn-missing" onclick="setFilter('missing')">❌ Faltan</button>
   <button class="filter-btn" id="btn-have" onclick="setFilter('have')">✅ Tengo</button>
   <button class="filter-btn" id="btn-all" onclick="setFilter('all')">Todas</button>
   <input id="search" placeholder="🔍 Buscar..." oninput="render()">
 </div>
-
-
-<div class="filters" style="margin-top:-4px;padding-bottom:12px;">
-  <button class="filter-btn" onclick="exportData()" style="background:rgba(255,200,0,0.15);border-color:#f5c518;">💾 Exportar backup</button>
-  <button class="filter-btn" onclick="printMissing()" style="background:rgba(0,100,255,0.15);border-color:#4499ff;">🖨️ Imprimir faltan</button>
-  <label class="filter-btn" style="background:rgba(0,200,100,0.15);border-color:#4caf50;cursor:pointer;">
-    📂 Importar backup
-    <input type="file" accept=".txt" onchange="importData(event)" style="display:none">
+<div class="action-btns">
+  <button class="action-btn" style="color:#f5c518;border-color:#f5c518;" onclick="exportData()">💾 Exportar backup</button>
+  <button class="action-btn" style="color:#4caf50;border-color:#4caf50;" onclick="printMissing()">🖨️ Imprimir faltan</button>
+  <label class="action-btn" style="color:#4499ff;border-color:#4499ff;cursor:pointer;">
+    📂 Importar backup<input type="file" accept=".txt" onchange="importData(event)" style="display:none">
   </label>
 </div>
 <div class="teams-bar" id="teams-bar"></div>
 <div class="groups" id="groups"></div>
-<div class="footer">Tocá cada figurita para marcarla • Se guarda automáticamente</div>
+<p style="text-align:center;font-size:11px;opacity:0.35;margin-top:12px;">Tocá cada figurita para marcarla • Se guarda automáticamente</p>
 
 <script>
 var TEAMS_ORDER = ["FWC","MEX","RSA","KOR","CZE","CAN","BIH","QAT","SUI","BRA","MAR","HAI","SCO","USA","PAR","AUS","TUR","GER","CUW","CIV","ECU","NED","JPN","SWE","TUN","BEL","EGY","IRN","NZL","ESP","CPV","KSA","URU","FRA","SEN","IRQ","NOR","ARG","ALG","AUT","JOR","POR","COD","UZB","COL","ENG","CRO","GHA","PAN","CC"];
 
 var COLORS = {
-  FWC:{bg:"#1a1a2e"},MEX:{bg:"#006847"},RSA:{bg:"#007a4d"},KOR:{bg:"#cd2e3a"},CZE:{bg:"#d7141a"},
-  CAN:{bg:"#cc0000"},BIH:{bg:"#002395"},QAT:{bg:"#8d1b3d"},SUI:{bg:"#cc0000"},BRA:{bg:"#009c3b"},
-  MAR:{bg:"#c1272d"},HAI:{bg:"#00209f"},SCO:{bg:"#003399"},USA:{bg:"#002868"},PAR:{bg:"#d52b1e"},
-  AUS:{bg:"#00843d"},TUR:{bg:"#e30a17"},GER:{bg:"#333333"},CUW:{bg:"#002b7f"},CIV:{bg:"#cc6600"},
-  ECU:{bg:"#007700"},NED:{bg:"#cc5500"},JPN:{bg:"#bc002d"},SWE:{bg:"#006aa7"},TUN:{bg:"#e70013"},
-  BEL:{bg:"#333333"},EGY:{bg:"#c8102e"},IRN:{bg:"#239f40"},NZL:{bg:"#00247d"},ESP:{bg:"#c60b1e"},
-  CPV:{bg:"#003893"},KSA:{bg:"#006c35"},URU:{bg:"#4488bb"},FRA:{bg:"#002395"},SEN:{bg:"#00853f"},
-  IRQ:{bg:"#333333"},NOR:{bg:"#aa1111"},ARG:{bg:"#4499cc"},ALG:{bg:"#006233"},AUT:{bg:"#cc1111"},
-  JOR:{bg:"#007a3d"},POR:{bg:"#006600"},COD:{bg:"#0055cc"},UZB:{bg:"#1eb53a"},COL:{bg:"#aa8800"},
-  ENG:{bg:"#003090"},CRO:{bg:"#cc0000"},GHA:{bg:"#006b3f"},PAN:{bg:"#da121a"},CC:{bg:"#cc0000"}
+  FWC:"#1a1a2e",MEX:"#006847",RSA:"#007a4d",KOR:"#cd2e3a",CZE:"#d7141a",
+  CAN:"#cc0000",BIH:"#002395",QAT:"#8d1b3d",SUI:"#cc0000",BRA:"#009c3b",
+  MAR:"#c1272d",HAI:"#00209f",SCO:"#003399",USA:"#002868",PAR:"#d52b1e",
+  AUS:"#00843d",TUR:"#e30a17",GER:"#333333",CUW:"#002b7f",CIV:"#cc6600",
+  ECU:"#007700",NED:"#cc5500",JPN:"#bc002d",SWE:"#006aa7",TUN:"#e70013",
+  BEL:"#333333",EGY:"#c8102e",IRN:"#239f40",NZL:"#00247d",ESP:"#c60b1e",
+  CPV:"#003893",KSA:"#006c35",URU:"#4488bb",FRA:"#002395",SEN:"#00853f",
+  IRQ:"#333333",NOR:"#aa1111",ARG:"#4499cc",ALG:"#006233",AUT:"#cc1111",
+  JOR:"#007a3d",POR:"#006600",COD:"#0055cc",UZB:"#1eb53a",COL:"#aa8800",
+  ENG:"#003090",CRO:"#cc0000",GHA:"#006b3f",PAN:"#da121a",CC:"#cc0000"
 };
 
 var STICKER_DATA = {};
-for(var i=0; i<TEAMS_ORDER.length; i++) {
-  var t = TEAMS_ORDER[i];
-  if(t === "FWC") {
-    STICKER_DATA[t] = ["FWC00","FWC1","FWC2","FWC3","FWC4","FWC5","FWC6","FWC7","FWC8","FWC9","FWC10","FWC11","FWC12","FWC13","FWC14","FWC15","FWC16","FWC17","FWC18","FWC19"];
-  } else if(t === "CC") {
-    var cc = [];
-    for(var j=1; j<=14; j++) cc.push("CC"+j);
-    STICKER_DATA[t] = cc;
-  } else {
-    var arr = [];
-    for(var j=1; j<=20; j++) arr.push(t+j);
-    STICKER_DATA[t] = arr;
-  }
+for(var i=0;i<TEAMS_ORDER.length;i++){
+  var t=TEAMS_ORDER[i];
+  if(t==="FWC"){STICKER_DATA[t]=["FWC00","FWC1","FWC2","FWC3","FWC4","FWC5","FWC6","FWC7","FWC8","FWC9","FWC10","FWC11","FWC12","FWC13","FWC14","FWC15","FWC16","FWC17","FWC18","FWC19"];}
+  else if(t==="CC"){var cc=[];for(var j=1;j<=14;j++)cc.push("CC"+j);STICKER_DATA[t]=cc;}
+  else{var arr=[];for(var j=1;j<=20;j++)arr.push(t+j);STICKER_DATA[t]=arr;}
 }
 
 var STORAGE_KEY = "panini2026_html_v1";
-var placedArr = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-var placed;
-if(placedArr === null) {
-  placed = {"FWC3":1,"FWC5":1,"FWC6":1,"FWC7":1};
+var placed = {};
+var raw = localStorage.getItem(STORAGE_KEY);
+if(raw){
+  try{
+    var arr=JSON.parse(raw);
+    for(var i=0;i<arr.length;i++) placed[arr[i]]=1;
+  }catch(e){}
 } else {
-  placed = {};
-  for(var i=0; i<placedArr.length; i++) placed[placedArr[i]] = 1;
-}
-
-var currentFilter = "missing";
-var currentTeam = null;
-
-function save() {
+  placed={"FWC3":1,"FWC5":1,"FWC6":1,"FWC7":1};
   localStorage.setItem(STORAGE_KEY, JSON.stringify(Object.keys(placed)));
 }
 
-function toggle(id) {
-  if(placed[id]) delete placed[id]; else placed[id] = 1;
-  save();
+var currentFilter="missing";
+var currentTeam=null;
+
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(Object.keys(placed)));}
+
+function toggle(id){
+  if(placed[id])delete placed[id]; else placed[id]=1;
+  save(); render();
+}
+
+function setFilter(f){
+  currentFilter=f;
+  document.getElementById('btn-missing').classList.toggle('active',f==='missing');
+  document.getElementById('btn-have').classList.toggle('active',f==='have');
+  document.getElementById('btn-all').classList.toggle('active',f==='all');
   render();
 }
 
-function setFilter(f) {
-  currentFilter = f;
-  document.getElementById('btn-missing').classList.toggle('active', f==='missing');
-  document.getElementById('btn-have').classList.toggle('active', f==='have');
-  document.getElementById('btn-all').classList.toggle('active', f==='all');
-  render();
-}
+function setTeam(t){currentTeam=(currentTeam===t)?null:t; render();}
 
-function setTeam(t) {
-  currentTeam = (currentTeam === t) ? null : t;
-  render();
-}
-
-function render() {
-  var search = document.getElementById('search').value.toLowerCase();
-  var total = 0;
-  for(var t in STICKER_DATA) total += STICKER_DATA[t].length;
-  var haveCount = Object.keys(placed).length;
-  var miss = total - haveCount;
-  var pct = Math.round(haveCount/total*100);
-
-  document.getElementById('s-total').textContent = total;
-  document.getElementById('s-have').textContent = haveCount;
-  document.getElementById('s-miss').textContent = miss;
-  document.getElementById('s-pct').textContent = pct+'%';
-  document.getElementById('prog-fill').style.width = pct+'%';
-
-  // Teams bar
-  var bar = document.getElementById('teams-bar');
-  var barHTML = '<button class="team-btn '+(currentTeam===null?'active':'')+'" onclick="setTeam(null)">Todos</button>';
-  for(var i=0; i<TEAMS_ORDER.length; i++) {
-    var t = TEAMS_ORDER[i];
-    var st = STICKER_DATA[t];
-    var done = 0;
-    for(var j=0; j<st.length; j++) { if(placed[st[j]]) done++; }
-    var gpct = Math.round(done/st.length*100);
-    var isActive = currentTeam===t;
-    var bg, border, txtColor, fw;
-    if(isActive) {
-      bg='#f5c518'; border='#f5c518'; txtColor='#000'; fw='bold';
-    } else if(gpct>=60) {
-      bg='rgba(76,175,80,0.35)'; border='#4caf50'; txtColor='#7dff9a'; fw='bold';
-    } else if(gpct>=40) {
-      bg='rgba(255,152,0,0.35)'; border='#ff9800'; txtColor='#ffc966'; fw='bold';
-    } else {
-      bg='rgba(255,255,255,0.04)'; border='rgba(255,255,255,0.2)'; txtColor='#ccc'; fw='normal';
-    }
-    barHTML += '<button style="padding:6px 12px;border-radius:12px;white-space:nowrap;border:2px solid '+border+';background:'+bg+';color:'+txtColor+';font-size:13px;cursor:pointer;flex-shrink:0;font-weight:'+fw+';" onclick="setTeam(''+t+'')">'+t+'</button>';
-  }
-  bar.innerHTML = barHTML;
-
-  // Groups
-  var gc = document.getElementById('groups');
-  var gcHTML = '';
-  for(var i=0; i<TEAMS_ORDER.length; i++) {
-    var t = TEAMS_ORDER[i];
-    if(currentTeam && currentTeam !== t) continue;
-    var stickers = STICKER_DATA[t];
-    var col = COLORS[t] || {bg:"#333"};
-
-    var filtered = [];
-    for(var j=0; j<stickers.length; j++) {
-      var id = stickers[j];
-      var have = !!placed[id];
-      var matchSearch = !search || id.toLowerCase().indexOf(search) >= 0;
-      var matchFilter = currentFilter==='all' || (currentFilter==='have' && have) || (currentFilter==='missing' && !have);
-      if(matchSearch && matchFilter) filtered.push(id);
-    }
-    if(filtered.length === 0) continue;
-
-    var done = 0;
-    for(var j=0; j<stickers.length; j++) if(placed[stickers[j]]) done++;
-    var tot = stickers.length;
-    var gpct = Math.round(done/tot*100);
-    var barColor = gpct===100?'#4caf50':gpct>60?'#f5c518':'#f44336';
-
-    var stickersHTML = '';
-    for(var j=0; j<filtered.length; j++) {
-      var id = filtered[j];
-      var have = !!placed[id];
-      stickersHTML += '<button class="sticker '+(have?'have':'')+'" onclick="toggle(\''+id+'\')">'+(have?'✅':'❌')+' '+id+'</button>';
-    }
-
-    gcHTML += '<div class="group">'
-      +'<div class="group-header" style="background:linear-gradient(135deg,'+col.bg+','+col.bg+'aa)">'
-      +'<div class="group-title"><span class="group-name">'+t+'</span><span class="group-count">'+done+'/'+tot+' ('+gpct+'%)</span></div>'
-      +'<div class="group-prog"><div class="group-prog-fill" style="width:'+gpct+'%;background:'+barColor+'"></div></div>'
-      +'</div><div class="stickers">'+stickersHTML+'</div></div>';
-  }
-  gc.innerHTML = gcHTML;
-}
-
-
-
-function printMissing() {
-  var missing = {};
-  for(var i=0; i<TEAMS_ORDER.length; i++) {
-    var t = TEAMS_ORDER[i];
-    var stickers = STICKER_DATA[t];
-    var missingList = [];
-    for(var j=0; j<stickers.length; j++) {
-      if(!placed[stickers[j]]) missingList.push(stickers[j]);
-    }
-    if(missingList.length > 0) missing[t] = missingList;
-  }
-
-  var html = '<html><head><meta charset="UTF-8"><title>Figuritas que faltan</title><style>'
-    + 'body{font-family:Arial,sans-serif;padding:20px;color:#000;}'
-    + 'h1{font-size:20px;margin-bottom:4px;}'
-    + 'h2{font-size:13px;color:#666;margin-bottom:16px;font-weight:normal;}'
-    + '.team{margin-bottom:14px;page-break-inside:avoid;}'
-    + '.team-name{font-weight:bold;font-size:14px;background:#f0f0f0;padding:4px 8px;border-radius:4px;margin-bottom:6px;display:inline-block;}'
-    + '.chips{display:flex;flex-wrap:wrap;gap:6px;}'
-    + '.chip{border:1px solid #ccc;border-radius:6px;padding:4px 10px;font-size:13px;font-weight:bold;}'
-    + '.footer{margin-top:20px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:8px;}'
-    + '@media print{button{display:none}}'
-    + '</style></head><body>';
-
-  var total = 0;
-  for(var t in missing) total += missing[t].length;
-
-  html += '<h1>⚽ FIFA World Cup 2026 — Figuritas que FALTAN</h1>';
-  html += '<h2>Total: ' + total + ' figuritas • Generado el ' + new Date().toLocaleDateString('es-AR') + '</h2>';
-  html += '<button onclick="window.print()" style="margin-bottom:16px;padding:8px 16px;font-size:14px;cursor:pointer;">🖨️ Imprimir</button>';
-
-  html += '<div class="teams-grid">';
-  for(var i=0; i<TEAMS_ORDER.length; i++) {
-    var t = TEAMS_ORDER[i];
-    if(!missing[t]) continue;
-    html += '<div class="team"><div class="team-name">' + t + ' (' + missing[t].length + ' faltan)</div>';
-    html += '<div class="chips">';
-    for(var j=0; j<missing[t].length; j++) {
-      html += '<span class="chip">' + missing[t][j] + '</span>';
-    }
-    html += '</div></div>';
-  }
-
-  html += '</div><div class="footer">Album FIFA World Cup 2026 — diegoatvault.github.io/album-panini-2026</div>';
-  html += '</body></html>';
-
-  var win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
-}
-
-function exportData() {
-  var keys = Object.keys(placed);
-  var text = keys.join('\n');
-  var blob = new Blob([text], {type:'text/plain'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'album-panini-backup.txt';
+function exportData(){
+  var keys=Object.keys(placed);
+  var blob=new Blob([keys.join('\n')],{type:'text/plain'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='album-panini-backup.txt';
   a.click();
 }
 
-function importData(event) {
-  var file = event.target.files[0];
-  if(!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var lines = e.target.result.split('\n').filter(function(l){ return l.trim(); });
-    placed = {};
-    for(var i=0; i<lines.length; i++) placed[lines[i].trim()] = 1;
-    save();
-    render();
-    alert('Importado correctamente: ' + lines.length + ' figuritas');
+function importData(event){
+  var file=event.target.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var lines=e.target.result.split('\n').filter(function(l){return l.trim();});
+    placed={};
+    for(var i=0;i<lines.length;i++) placed[lines[i].trim()]=1;
+    save(); render();
+    alert('Importado: '+lines.length+' figuritas');
   };
   reader.readAsText(file);
 }
 
-window.onload = function() { render(); };
+function printMissing(){
+  var missing={};
+  for(var i=0;i<TEAMS_ORDER.length;i++){
+    var t=TEAMS_ORDER[i];
+    var st=STICKER_DATA[t];
+    var ml=[];
+    for(var j=0;j<st.length;j++) if(!placed[st[j]])ml.push(st[j]);
+    if(ml.length>0)missing[t]=ml;
+  }
+  var total=0;
+  for(var t in missing)total+=missing[t].length;
+  var html='<html><head><meta charset="UTF-8"><title>Figuritas que faltan</title><style>'
+    +'body{font-family:Arial,sans-serif;padding:10px 14px;color:#000;font-size:11px;}'
+    +'h1{font-size:14px;margin-bottom:2px;}h2{font-size:10px;color:#666;margin-bottom:8px;}'
+    +'.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 12px;}'
+    +'.team{margin-bottom:4px;page-break-inside:avoid;}'
+    +'.tn{font-weight:bold;font-size:10px;background:#f0f0f0;padding:2px 5px;border-radius:3px;margin-bottom:3px;display:inline-block;}'
+    +'.chips{display:flex;flex-wrap:wrap;gap:3px;}'
+    +'.chip{border:1px solid #bbb;border-radius:4px;padding:1px 5px;font-size:9px;font-weight:bold;}'
+    +'.footer{margin-top:8px;font-size:9px;color:#999;border-top:1px solid #eee;padding-top:4px;}'
+    +'@media print{button{display:none}}'
+    +'</style></head><body>';
+  html+='<h1>⚽ FIFA World Cup 2026 — Figuritas que FALTAN</h1>';
+  html+='<h2>Total: '+total+' figuritas • '+new Date().toLocaleDateString('es-AR')+'</h2>';
+  html+='<button onclick="window.print()" style="margin-bottom:10px;padding:6px 14px;font-size:13px;cursor:pointer;">🖨️ Imprimir</button>';
+  html+='<div class="grid">';
+  for(var i=0;i<TEAMS_ORDER.length;i++){
+    var t=TEAMS_ORDER[i];
+    if(!missing[t])continue;
+    html+='<div class="team"><div class="tn">'+t+' ('+missing[t].length+')</div><div class="chips">';
+    for(var j=0;j<missing[t].length;j++) html+='<span class="chip">'+missing[t][j]+'</span>';
+    html+='</div></div>';
+  }
+  html+='</div><div class="footer">diegoatvault.github.io/album-panini-2026</div></body></html>';
+  var win=window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+}
+
+function render(){
+  var search=document.getElementById('search').value.toLowerCase();
+  var total=0;
+  for(var t in STICKER_DATA)total+=STICKER_DATA[t].length;
+  var haveCount=Object.keys(placed).length;
+  var pct=Math.round(haveCount/total*100);
+
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-have').textContent=haveCount;
+  document.getElementById('s-miss').textContent=total-haveCount;
+  document.getElementById('s-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+
+  // Teams bar with colors
+  var bar=document.getElementById('teams-bar');
+  var barHTML='<button style="padding:6px 12px;border-radius:12px;white-space:nowrap;border:2px solid '+(currentTeam===null?'#f5c518':'rgba(255,255,255,0.2)')+';background:'+(currentTeam===null?'#f5c518':'rgba(255,255,255,0.06)')+';color:'+(currentTeam===null?'#000':'#fff')+';font-size:13px;cursor:pointer;flex-shrink:0;font-weight:'+(currentTeam===null?'bold':'normal')+';" onclick="setTeam(null)">Todos</button>';
+  for(var i=0;i<TEAMS_ORDER.length;i++){
+    var t=TEAMS_ORDER[i];
+    var st=STICKER_DATA[t];
+    var done=0;
+    for(var j=0;j<st.length;j++) if(placed[st[j]])done++;
+    var gpct=Math.round(done/st.length*100);
+    var isActive=currentTeam===t;
+    var bg,border,txt,fw;
+    if(isActive){bg='#f5c518';border='#f5c518';txt='#000';fw='bold';}
+    else if(gpct>=60){bg='rgba(76,175,80,0.35)';border='#4caf50';txt='#7dff9a';fw='bold';}
+    else if(gpct>=40){bg='rgba(255,152,0,0.35)';border='#ff9800';txt='#ffc966';fw='bold';}
+    else{bg='rgba(255,255,255,0.04)';border='rgba(255,255,255,0.2)';txt='#ccc';fw='normal';}
+    barHTML+='<button style="padding:6px 12px;border-radius:12px;white-space:nowrap;border:2px solid '+border+';background:'+bg+';color:'+txt+';font-size:13px;cursor:pointer;flex-shrink:0;font-weight:'+fw+';" onclick="setTeam(\''+t+'\')">'+t+'</button>';
+  }
+  bar.innerHTML=barHTML;
+
+  // Groups
+  var gc=document.getElementById('groups');
+  var gcHTML='';
+  for(var i=0;i<TEAMS_ORDER.length;i++){
+    var t=TEAMS_ORDER[i];
+    if(currentTeam&&currentTeam!==t)continue;
+    var stickers=STICKER_DATA[t];
+    var col=COLORS[t]||'#333';
+    var filtered=[];
+    for(var j=0;j<stickers.length;j++){
+      var id=stickers[j];
+      var have=!!placed[id];
+      var ms=!search||id.toLowerCase().indexOf(search)>=0;
+      var mf=currentFilter==='all'||(currentFilter==='have'&&have)||(currentFilter==='missing'&&!have);
+      if(ms&&mf)filtered.push(id);
+    }
+    if(filtered.length===0)continue;
+    var done=0;
+    for(var j=0;j<stickers.length;j++) if(placed[stickers[j]])done++;
+    var gpct=Math.round(done/stickers.length*100);
+    var bc=gpct===100?'#4caf50':gpct>60?'#f5c518':'#f44336';
+    var sHTML='';
+    for(var j=0;j<filtered.length;j++){
+      var id=filtered[j];
+      var have=!!placed[id];
+      sHTML+='<button class="sticker'+(have?' have':'')+'" onclick="toggle(\''+id+'\')">'+(have?'✅':'❌')+' '+id+'</button>';
+    }
+    gcHTML+='<div class="group"><div class="group-header" style="background:linear-gradient(135deg,'+col+','+col+'aa)"><div class="group-title"><span class="group-name">'+t+'</span><span class="group-count">'+done+'/'+stickers.length+' ('+gpct+'%)</span></div><div class="group-prog"><div class="group-prog-fill" style="width:'+gpct+'%;background:'+bc+'"></div></div></div><div class="stickers">'+sHTML+'</div></div>';
+  }
+  gc.innerHTML=gcHTML;
+}
+
+render();
 </script>
 </body>
 </html>
