@@ -161,7 +161,22 @@ function render() {
   var barHTML = '<button class="team-btn '+(currentTeam===null?'active':'')+'" onclick="setTeam(null)">Todos</button>';
   for(var i=0; i<TEAMS_ORDER.length; i++) {
     var t = TEAMS_ORDER[i];
-    barHTML += '<button class="team-btn '+(currentTeam===t?'active':'')+'" onclick="setTeam(\''+t+'\')">'+t+'</button>';
+    var st = STICKER_DATA[t];
+    var done = 0;
+    for(var j=0; j<st.length; j++) { if(placed[st[j]]) done++; }
+    var gpct = Math.round(done/st.length*100);
+    var isActive = currentTeam===t;
+    var bg, border, txtColor, fw;
+    if(isActive) {
+      bg='#f5c518'; border='#f5c518'; txtColor='#000'; fw='bold';
+    } else if(gpct>=60) {
+      bg='rgba(76,175,80,0.35)'; border='#4caf50'; txtColor='#7dff9a'; fw='bold';
+    } else if(gpct>=40) {
+      bg='rgba(255,152,0,0.35)'; border='#ff9800'; txtColor='#ffc966'; fw='bold';
+    } else {
+      bg='rgba(255,255,255,0.04)'; border='rgba(255,255,255,0.2)'; txtColor='#ccc'; fw='normal';
+    }
+    barHTML += '<button style="padding:6px 12px;border-radius:12px;white-space:nowrap;border:2px solid '+border+';background:'+bg+';color:'+txtColor+';font-size:13px;cursor:pointer;flex-shrink:0;font-weight:'+fw+';" onclick="setTeam(''+t+'')">'+t+'</button>';
   }
   bar.innerHTML = barHTML;
 
