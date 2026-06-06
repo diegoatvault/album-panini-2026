@@ -64,6 +64,7 @@ body { font-family: Georgia, serif; background: linear-gradient(160deg,#0f0c29,#
 
 <div class="filters" style="margin-top:-4px;padding-bottom:12px;">
   <button class="filter-btn" onclick="exportData()" style="background:rgba(255,200,0,0.15);border-color:#f5c518;">💾 Exportar backup</button>
+  <button class="filter-btn" onclick="printMissing()" style="background:rgba(0,100,255,0.15);border-color:#4499ff;">🖨️ Imprimir faltan</button>
   <label class="filter-btn" style="background:rgba(0,200,100,0.15);border-color:#4caf50;cursor:pointer;">
     📂 Importar backup
     <input type="file" accept=".txt" onchange="importData(event)" style="display:none">
@@ -205,6 +206,57 @@ function render() {
   gc.innerHTML = gcHTML;
 }
 
+
+
+function printMissing() {
+  var missing = {};
+  for(var i=0; i<TEAMS_ORDER.length; i++) {
+    var t = TEAMS_ORDER[i];
+    var stickers = STICKER_DATA[t];
+    var missingList = [];
+    for(var j=0; j<stickers.length; j++) {
+      if(!placed[stickers[j]]) missingList.push(stickers[j]);
+    }
+    if(missingList.length > 0) missing[t] = missingList;
+  }
+
+  var html = '<html><head><meta charset="UTF-8"><title>Figuritas que faltan</title><style>'
+    + 'body{font-family:Arial,sans-serif;padding:20px;color:#000;}'
+    + 'h1{font-size:20px;margin-bottom:4px;}'
+    + 'h2{font-size:13px;color:#666;margin-bottom:16px;font-weight:normal;}'
+    + '.team{margin-bottom:14px;page-break-inside:avoid;}'
+    + '.team-name{font-weight:bold;font-size:14px;background:#f0f0f0;padding:4px 8px;border-radius:4px;margin-bottom:6px;display:inline-block;}'
+    + '.chips{display:flex;flex-wrap:wrap;gap:6px;}'
+    + '.chip{border:1px solid #ccc;border-radius:6px;padding:4px 10px;font-size:13px;font-weight:bold;}'
+    + '.footer{margin-top:20px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:8px;}'
+    + '@media print{button{display:none}}'
+    + '</style></head><body>';
+
+  var total = 0;
+  for(var t in missing) total += missing[t].length;
+
+  html += '<h1>⚽ FIFA World Cup 2026 — Figuritas que FALTAN</h1>';
+  html += '<h2>Total: ' + total + ' figuritas • Generado el ' + new Date().toLocaleDateString('es-AR') + '</h2>';
+  html += '<button onclick="window.print()" style="margin-bottom:16px;padding:8px 16px;font-size:14px;cursor:pointer;">🖨️ Imprimir</button>';
+
+  for(var i=0; i<TEAMS_ORDER.length; i++) {
+    var t = TEAMS_ORDER[i];
+    if(!missing[t]) continue;
+    html += '<div class="team"><div class="team-name">' + t + ' (' + missing[t].length + ' faltan)</div>';
+    html += '<div class="chips">';
+    for(var j=0; j<missing[t].length; j++) {
+      html += '<span class="chip">' + missing[t][j] + '</span>';
+    }
+    html += '</div></div>';
+  }
+
+  html += '<div class="footer">Album FIFA World Cup 2026 — diegoatvault.github.io/album-panini-2026</div>';
+  html += '</body></html>';
+
+  var win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+}
 
 function exportData() {
   var keys = Object.keys(placed);
