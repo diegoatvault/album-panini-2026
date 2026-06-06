@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Album FIFA 2026</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: Georgia, serif; background: linear-gradient(160deg,#0f0c29,#302b63,#24243e); min-height: 100vh; color: #fff; padding-bottom: 60px; }
+.header { background: linear-gradient(90deg,#c8102e,#0033a0); padding: 16px 20px; text-align: center; border-bottom: 4px solid #f5c518; }
+.header h1 { font-size: 22px; margin: 4px 0; }
+.header p { font-size: 13px; opacity: 0.85; }
+.stats { display: flex; justify-content: center; gap: 20px; padding: 14px 20px; background: rgba(255,255,255,0.06); flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-val { font-size: 22px; font-weight: bold; }
+.stat-lbl { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+.progress-wrap { padding: 6px 16px 12px; }
+.progress-bar { background: rgba(255,255,255,0.1); border-radius: 8px; height: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg,#4caf50,#f5c518); border-radius: 8px; transition: width 0.4s; }
+.filters { display: flex; justify-content: center; gap: 8px; padding: 0 16px 10px; flex-wrap: wrap; }
+.filter-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); color: #fff; font-weight: bold; cursor: pointer; font-size: 14px; }
+.filter-btn.active { border-color: #f5c518; background: #f5c518; color: #000; }
+#search { padding: 8px 14px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: #fff; font-size: 14px; outline: none; width: 130px; }
+.teams-bar { padding: 0 12px 10px; display: flex; gap: 5px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.teams-bar::-webkit-scrollbar { display: none; }
+.team-btn { padding: 6px 12px; border-radius: 12px; white-space: nowrap; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); color: #ccc; font-size: 13px; cursor: pointer; flex-shrink: 0; }
+.team-btn.active { border-color: #f5c518; background: #f5c518; color: #000; font-weight: bold; }
+.groups { padding: 0 12px; }
+.group { margin-bottom: 14px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); }
+.group-header { padding: 10px 14px; }
+.group-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.group-name { font-weight: bold; font-size: 16px; color: #fff; }
+.group-count { background: rgba(0,0,0,0.35); border-radius: 10px; padding: 3px 10px; font-size: 13px; color: #fff; font-weight: bold; }
+.group-prog { background: rgba(0,0,0,0.3); border-radius: 4px; height: 5px; overflow: hidden; }
+.group-prog-fill { height: 100%; border-radius: 4px; }
+.stickers { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; padding: 10px; }
+.sticker { padding: 12px 8px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); cursor: pointer; font-size: 16px; font-weight: bold; color: #fff; text-align: center; transition: all 0.15s; }
+.sticker.have { border-color: #4caf50; background: rgba(76,175,80,0.2); }
+.footer { text-align: center; font-size: 11px; opacity: 0.35; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚽ FIFA World Cup 2026™</h1>
+  <p>Álbum de Diego & su hija 🌟</p>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-val" id="s-total" style="color:#aaa">-</div><div class="stat-lbl">Total</div></div>
+  <div class="stat"><div class="stat-val" id="s-have" style="color:#4caf50">-</div><div class="stat-lbl">✅ Pegadas</div></div>
+  <div class="stat"><div class="stat-val" id="s-miss" style="color:#f44336">-</div><div class="stat-lbl">❌ Faltan</div></div>
+  <div class="stat"><div class="stat-val" id="s-pct" style="color:#f5c518">0%</div><div class="stat-lbl">Progreso</div></div>
+</div>
+<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div></div>
+
+<div class="filters">
+  <button class="filter-btn active" id="btn-missing" onclick="setFilter('missing')">❌ Faltan</button>
+  <button class="filter-btn" id="btn-have" onclick="setFilter('have')">✅ Tengo</button>
+  <button class="filter-btn" id="btn-all" onclick="setFilter('all')">Todas</button>
+  <input id="search" placeholder="🔍 Buscar..." oninput="render()">
+</div>
+
+<div class="teams-bar" id="teams-bar"></div>
+<div class="groups" id="groups"></div>
+<div class="footer">Tocá cada figurita para marcarla • Se guarda automáticamente</div>
+
+<script>
+var TEAMS_ORDER = ["FWC","MEX","RSA","KOR","CZE","CAN","BIH","QAT","SUI","BRA","MAR","HAI","SCO","USA","PAR","AUS","TUR","GER","CUW","CIV","ECU","NED","JPN","SWE","TUN","BEL","EGY","IRN","NZL","ESP","CPV","KSA","URU","FRA","SEN","IRQ","NOR","ARG","ALG","AUT","JOR","POR","COD","UZB","COL","ENG","CRO","GHA","PAN","CC"];
+
+var COLORS = {
+  FWC:{bg:"#1a1a2e"},MEX:{bg:"#006847"},RSA:{bg:"#007a4d"},KOR:{bg:"#cd2e3a"},CZE:{bg:"#d7141a"},
+  CAN:{bg:"#cc0000"},BIH:{bg:"#002395"},QAT:{bg:"#8d1b3d"},SUI:{bg:"#cc0000"},BRA:{bg:"#009c3b"},
+  MAR:{bg:"#c1272d"},HAI:{bg:"#00209f"},SCO:{bg:"#003399"},USA:{bg:"#002868"},PAR:{bg:"#d52b1e"},
+  AUS:{bg:"#00843d"},TUR:{bg:"#e30a17"},GER:{bg:"#333333"},CUW:{bg:"#002b7f"},CIV:{bg:"#cc6600"},
+  ECU:{bg:"#007700"},NED:{bg:"#cc5500"},JPN:{bg:"#bc002d"},SWE:{bg:"#006aa7"},TUN:{bg:"#e70013"},
+  BEL:{bg:"#333333"},EGY:{bg:"#c8102e"},IRN:{bg:"#239f40"},NZL:{bg:"#00247d"},ESP:{bg:"#c60b1e"},
+  CPV:{bg:"#003893"},KSA:{bg:"#006c35"},URU:{bg:"#4488bb"},FRA:{bg:"#002395"},SEN:{bg:"#00853f"},
+  IRQ:{bg:"#333333"},NOR:{bg:"#aa1111"},ARG:{bg:"#4499cc"},ALG:{bg:"#006233"},AUT:{bg:"#cc1111"},
+  JOR:{bg:"#007a3d"},POR:{bg:"#006600"},COD:{bg:"#0055cc"},UZB:{bg:"#1eb53a"},COL:{bg:"#aa8800"},
+  ENG:{bg:"#003090"},CRO:{bg:"#cc0000"},GHA:{bg:"#006b3f"},PAN:{bg:"#da121a"},CC:{bg:"#cc0000"}
+};
+
+var STICKER_DATA = {};
+for(var i=0; i<TEAMS_ORDER.length; i++) {
+  var t = TEAMS_ORDER[i];
+  if(t === "FWC") {
+    STICKER_DATA[t] = ["FWC00","FWC1","FWC2","FWC3","FWC4","FWC5","FWC6","FWC7","FWC8","FWC9","FWC10","FWC11","FWC12","FWC13","FWC14","FWC15","FWC16","FWC17","FWC18","FWC19"];
+  } else if(t === "CC") {
+    var cc = [];
+    for(var j=1; j<=14; j++) cc.push("CC"+j);
+    STICKER_DATA[t] = cc;
+  } else {
+    var arr = [];
+    for(var j=1; j<=20; j++) arr.push(t+j);
+    STICKER_DATA[t] = arr;
+  }
+}
+
+var STORAGE_KEY = "panini2026_html_v1";
+var placedArr = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+var placed;
+if(placedArr === null) {
+  placed = {"FWC3":1,"FWC5":1,"FWC6":1,"FWC7":1};
+} else {
+  placed = {};
+  for(var i=0; i<placedArr.length; i++) placed[placedArr[i]] = 1;
+}
+
+var currentFilter = "missing";
+var currentTeam = null;
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(Object.keys(placed)));
+}
+
+function toggle(id) {
+  if(placed[id]) delete placed[id]; else placed[id] = 1;
+  save();
+  render();
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  document.getElementById('btn-missing').classList.toggle('active', f==='missing');
+  document.getElementById('btn-have').classList.toggle('active', f==='have');
+  document.getElementById('btn-all').classList.toggle('active', f==='all');
+  render();
+}
+
+function setTeam(t) {
+  currentTeam = (currentTeam === t) ? null : t;
+  render();
+}
+
+function render() {
+  var search = document.getElementById('search').value.toLowerCase();
+  var total = 0;
+  for(var t in STICKER_DATA) total += STICKER_DATA[t].length;
+  var haveCount = Object.keys(placed).length;
+  var miss = total - haveCount;
+  var pct = Math.round(haveCount/total*100);
+
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-have').textContent = haveCount;
+  document.getElementById('s-miss').textContent = miss;
+  document.getElementById('s-pct').textContent = pct+'%';
+  document.getElementById('prog-fill').style.width = pct+'%';
+
+  // Teams bar
+  var bar = document.getElementById('teams-bar');
+  var barHTML = '<button class="team-btn '+(currentTeam===null?'active':'')+'" onclick="setTeam(null)">Todos</button>';
+  for(var i=0; i<TEAMS_ORDER.length; i++) {
+    var t = TEAMS_ORDER[i];
+    barHTML += '<button class="team-btn '+(currentTeam===t?'active':'')+'" onclick="setTeam(\''+t+'\')">'+t+'</button>';
+  }
+  bar.innerHTML = barHTML;
+
+  // Groups
+  var gc = document.getElementById('groups');
+  var gcHTML = '';
+  for(var i=0; i<TEAMS_ORDER.length; i++) {
+    var t = TEAMS_ORDER[i];
+    if(currentTeam && currentTeam !== t) continue;
+    var stickers = STICKER_DATA[t];
+    var col = COLORS[t] || {bg:"#333"};
+
+    var filtered = [];
+    for(var j=0; j<stickers.length; j++) {
+      var id = stickers[j];
+      var have = !!placed[id];
+      var matchSearch = !search || id.toLowerCase().indexOf(search) >= 0;
+      var matchFilter = currentFilter==='all' || (currentFilter==='have' && have) || (currentFilter==='missing' && !have);
+      if(matchSearch && matchFilter) filtered.push(id);
+    }
+    if(filtered.length === 0) continue;
+
+    var done = 0;
+    for(var j=0; j<stickers.length; j++) if(placed[stickers[j]]) done++;
+    var tot = stickers.length;
+    var gpct = Math.round(done/tot*100);
+    var barColor = gpct===100?'#4caf50':gpct>60?'#f5c518':'#f44336';
+
+    var stickersHTML = '';
+    for(var j=0; j<filtered.length; j++) {
+      var id = filtered[j];
+      var have = !!placed[id];
+      stickersHTML += '<button class="sticker '+(have?'have':'')+'" onclick="toggle(\''+id+'\')">'+(have?'✅':'❌')+' '+id+'</button>';
+    }
+
+    gcHTML += '<div class="group">'
+      +'<div class="group-header" style="background:linear-gradient(135deg,'+col.bg+','+col.bg+'aa)">'
+      +'<div class="group-title"><span class="group-name">'+t+'</span><span class="group-count">'+done+'/'+tot+' ('+gpct+'%)</span></div>'
+      +'<div class="group-prog"><div class="group-prog-fill" style="width:'+gpct+'%;background:'+barColor+'"></div></div>'
+      +'</div><div class="stickers">'+stickersHTML+'</div></div>';
+  }
+  gc.innerHTML = gcHTML;
+}
+
+window.onload = function() { render(); };
+</script>
+</body>
+</html>
